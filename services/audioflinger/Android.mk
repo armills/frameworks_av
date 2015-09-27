@@ -109,7 +109,7 @@ else
     LOCAL_CFLAGS += -DANDROID_SMP=0
 endif
 
-LOCAL_CFLAGS += -Os -fvisibility=hidden
+LOCAL_CFLAGS += -fvisibility=hidden
 
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_HDMI_PASSTHROUGH)),true)
     LOCAL_CFLAGS += -DHDMI_PASSTHROUGH_ENABLED

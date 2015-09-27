@@ -224,7 +224,7 @@ LOCAL_SHARED_LIBRARIES += \
         libstagefright_foundation \
         libdl
 
-LOCAL_CFLAGS += -Os -Wno-multichar
+LOCAL_CFLAGS += -Wno-multichar
 
 ifeq ($(DTS_CODEC_M_), true)
   LOCAL_SRC_FILES+= DTSUtils.cpp

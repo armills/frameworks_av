@@ -88,6 +88,7 @@ LOCAL_SRC_FILES:=                         \
         FFMPEGSoftCodec.cpp               \
 
 LOCAL_C_INCLUDES:= \
+        $(TOP)/frameworks/av/include/camera/ \
         $(TOP)/frameworks/av/include/media/ \
         $(TOP)/frameworks/av/include/media/stagefright/timedtext \
         $(TOP)/frameworks/native/include/media/hardware \

@@ -181,7 +181,7 @@ CAMERA_PARAMETERS_EXTRA_C
 #endif
 
 CameraParameters::CameraParameters()
-                : mMap()
+                : mMap(String8()), lSize(0)
 {
 }
 
@@ -215,6 +215,7 @@ void CameraParameters::unflatten(const String8 &params)
     const char *b;
 
     mMap.clear();
+    lSize = 0;
 
     for (;;) {
         // Find the bounds of the key name.
@@ -232,15 +233,31 @@ void CameraParameters::unflatten(const String8 &params)
             // If there's no semicolon, this is the last item.
             String8 v(a);
             mMap.add(k, v);
+            set(k.string(), v.string());
             break;
         }
 
         String8 v(a, (size_t)(b-a));
         mMap.add(k, v);
+        set(k.string(), v.string());
         a = b+1;
     }
 }
 
+size_t CameraParameters::indexOf(const char* key) const
+{
+    for (size_t i = 0; i < lSize; i++) {
+        String8 k, v;
+        k = lKeys[i]; //mMap.keyAt(i);
+        v = lValues[i]; //mMap.valueAt(i);
+
+        if (strcmp(key, k.string()) == 0)
+            return i;
+    }
+
+    ALOGW("CameraParameters %s not found!", key);
+    return 999;
+}
 
 void CameraParameters::set(const char *key, const char *value)
 {
@@ -265,7 +282,12 @@ void CameraParameters::set(const char *key, const char *value)
         mMap.replaceValueFor(String8("hdr-need-1x"), String8("false"));
     }
 #endif
+    size_t index = indexOf(key);
+    if (index == 999)
+        index = lSize++;
 
+    lKeys[index] = String8(key);
+    lValues[index] = String8(value);
     mMap.replaceValueFor(String8(key), String8(value));
 }
 
@@ -285,10 +307,21 @@ void CameraParameters::setFloat(const char *key, float value)
 
 const char *CameraParameters::get(const char *key) const
 {
+    /*
     String8 v = mMap.valueFor(String8(key));
     if (v.length() == 0)
         return 0;
     return v.string();
+    */
+
+    ALOGV("CameraParameters get %s. Size %zu", key, lSize);
+
+    size_t index = indexOf(key);
+    if (index == 999) {
+        ALOGW("CameraParameters %s not found!", key);
+        return 0;
+    }
+    return lValues[index].string();
 }
 
 int CameraParameters::getInt(const char *key) const
@@ -309,6 +342,11 @@ float CameraParameters::getFloat(const char *key) const
 void CameraParameters::remove(const char *key)
 {
     mMap.removeItem(String8(key));
+    size_t index = indexOf(key);
+    if (index != 999) {
+        lKeys[index] = String8("");
+        lValues[index] = String8("");
+    }
 }
 
 // Parse string like "640x480" or "10000,20000"

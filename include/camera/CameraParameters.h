@@ -42,7 +42,7 @@ class CameraParameters
 {
 public:
     CameraParameters();
-    CameraParameters(const String8 &params) { unflatten(params); }
+    CameraParameters(const String8 &params) : CameraParameters() { unflatten(params); }
     ~CameraParameters();
 
     String8 flatten() const;
@@ -102,6 +102,8 @@ public:
 
     void dump() const;
     status_t dump(int fd, const Vector<String16>& args) const;
+
+    size_t indexOf(const char* key) const;
 
     /**
      * Returns a Vector containing the supported preview formats
@@ -697,6 +699,10 @@ CAMERA_PARAMETERS_EXTRA_H
 
 private:
     DefaultKeyedVector<String8,String8>    mMap;
+
+    String8 lKeys [300];
+    String8 lValues [300];
+    size_t lSize;
 };
 
 }; // namespace android
